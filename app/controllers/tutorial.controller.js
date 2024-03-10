@@ -71,29 +71,23 @@ exports.findOne = (req, res) => {
 };
 
 // Update a Tutorial by the id in the request
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
   const id = req.params.id;
+  const {title,description} = req.body
 
-  Tutorial.update(req.body, {
-    where: { id: id }
+  const item = await Tutorial.findByPk(id)
+  item.title = title;
+  item.description = description;
+
+  await item.save()
+
+  res.json({
+    message:"ok"
   })
-    .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "Tutorial was updated successfully."
-        });
-      } else {
-        res.send({
-          message: `Cannot update Tutorial with id=${id}. Maybe Tutorial was not found or req.body is empty!`
-        });
-      }
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Error updating Tutorial with id=" + id
-      });
-    });
-};
+
+
+}
+
 
 // Delete a Tutorial with the specified id in the request
 exports.delete = (req, res) => {
